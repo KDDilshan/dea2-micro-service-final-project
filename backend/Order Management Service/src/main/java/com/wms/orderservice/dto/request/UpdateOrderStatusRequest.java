@@ -2,15 +2,10 @@ package com.wms.orderservice.dto.request;
 
 import com.wms.orderservice.entity.OrderStatus;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Builder;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class UpdateOrderStatusRequest {
-
-    @NotNull(message = "Status is required")
-    private OrderStatus status;
-}
+public record UpdateOrderStatusRequest(
+        @NotNull(message = "Status is required")
+        OrderStatus status
+) {}

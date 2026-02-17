@@ -6,8 +6,9 @@ import com.wms.orderservice.dto.request.UpdateOrderStatusRequest;
 import com.wms.orderservice.dto.response.AvailabilityResponse;
 import com.wms.orderservice.dto.response.OrderResponse;
 import com.wms.orderservice.entity.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface OrderService {
@@ -16,7 +17,7 @@ public interface OrderService {
 
     OrderResponse getOrderById(UUID id);
 
-    List<OrderResponse> getAllOrders(OrderStatus status);
+    Page<OrderResponse> getAllOrders(OrderStatus status, Pageable pageable);
 
     AvailabilityResponse validateOrder(UUID id);
 

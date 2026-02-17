@@ -91,19 +91,19 @@ class OrderMapperTest {
 
         OrderResponse response = orderMapper.toResponse(order);
 
-        assertEquals(orderId, response.getId());
-        assertEquals("ORD-2026-000001", response.getOrderNumber());
-        assertEquals("CUST-LK-001", response.getCustomerId());
-        assertEquals(OrderStatus.APPROVED, response.getStatus());
-        assertTrue(response.isPartialAllowed());
-        assertEquals(new BigDecimal("2000.00"), response.getTotalAmount());
-        assertEquals(1, response.getItems().size());
+        assertEquals(orderId, response.id());
+        assertEquals("ORD-2026-000001", response.orderNumber());
+        assertEquals("CUST-LK-001", response.customerId());
+        assertEquals(OrderStatus.APPROVED, response.status());
+        assertTrue(response.partialAllowed());
+        assertEquals(new BigDecimal("2000.00"), response.totalAmount());
+        assertEquals(1, response.items().size());
 
-        OrderItemResponse itemResponse = response.getItems().get(0);
-        assertEquals(itemId, itemResponse.getId());
-        assertEquals("ITEM-001", itemResponse.getItemId());
-        assertEquals(10, itemResponse.getRequestedQty());
-        assertEquals(8, itemResponse.getApprovedQty());
+        OrderItemResponse itemResponse = response.items().get(0);
+        assertEquals(itemId, itemResponse.id());
+        assertEquals("ITEM-001", itemResponse.itemId());
+        assertEquals(10, itemResponse.requestedQty());
+        assertEquals(8, itemResponse.approvedQty());
     }
 
     @Test
@@ -118,8 +118,8 @@ class OrderMapperTest {
                 .build();
 
         OrderResponse response = orderMapper.toResponse(order);
-        assertNotNull(response.getItems());
-        assertTrue(response.getItems().isEmpty());
+        assertNotNull(response.items());
+        assertTrue(response.items().isEmpty());
     }
 
     @Test
@@ -144,7 +144,7 @@ class OrderMapperTest {
         List<OrderResponse> responses = orderMapper.toResponseList(List.of(order1, order2));
 
         assertEquals(2, responses.size());
-        assertEquals("ORD-2026-000001", responses.get(0).getOrderNumber());
-        assertEquals("ORD-2026-000002", responses.get(1).getOrderNumber());
+        assertEquals("ORD-2026-000001", responses.get(0).orderNumber());
+        assertEquals("ORD-2026-000002", responses.get(1).orderNumber());
     }
 }

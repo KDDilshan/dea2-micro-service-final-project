@@ -18,11 +18,15 @@ import com.wms.orderservice.service.client.InventoryClient;
 import com.wms.orderservice.util.OrderNumberGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderNumberGenerator orderNumberGenerator;
     private final InventoryClient inventoryClient;
 
-    // ----- Legal transitions map -----
+    // Defines which status transitions are allowed for each order state
     private static final Map<OrderStatus, Set<OrderStatus>> LEGAL_TRANSITIONS = Map.ofEntries(
             Map.entry(OrderStatus.CREATED, Set.of(OrderStatus.VALIDATED, OrderStatus.REJECTED, OrderStatus.CANCELLED)),
             Map.entry(OrderStatus.VALIDATED, Set.of(OrderStatus.APPROVED, OrderStatus.PARTIALLY_APPROVED, OrderStatus.REJECTED, OrderStatus.CANCELLED)),
@@ -50,12 +54,10 @@ public class OrderServiceImpl implements OrderService {
             Map.entry(OrderStatus.DELIVERED, Set.of())
     );
 
-    // ===================================================================
-    // 1) Create Order
-    // ===================================================================
+
     @Override
     public OrderResponse createOrder(CreateOrderRequest request) {
-        log.info("Creating order for customer: {}", request.getCustomerId());
+        log.info("Creating order for customer: {}", request.customerId());
 
         Order order = orderMapper.toEntity(request);
         order.setOrderNumber(orderNumberGenerator.generateOrderNumber());
@@ -69,9 +71,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(saved);
     }
 
-    // ===================================================================
-    // 2) Get Order by ID
-    // ===================================================================
+
     @Override
     @Transactional(readOnly = true)
     public OrderResponse getOrderById(UUID id) {
@@ -79,24 +79,20 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(order);
     }
 
-    // ===================================================================
-    // 3) Get All Orders (optional status filter)
-    // ===================================================================
+
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponse> getAllOrders(OrderStatus status) {
-        List<Order> orders;
+    public Page<OrderResponse> getAllOrders(OrderStatus status, Pageable pageable) {
+        Page<Order> orders;
         if (status != null) {
-            orders = orderRepository.findByStatus(status);
+            orders = orderRepository.findByStatus(status, pageable);
         } else {
-            orders = orderRepository.findAll();
+            orders = orderRepository.findAll(pageable);
         }
-        return orderMapper.toResponseList(orders);
+        return orders.map(orderMapper::toResponse);
     }
 
-    // ===================================================================
-    // 4) Validate Order
-    // ===================================================================
+
     @Override
     public AvailabilityResponse validateOrder(UUID id) {
         Order order = findOrderOrThrow(id);
@@ -107,10 +103,9 @@ public class OrderServiceImpl implements OrderService {
 
         log.info("Validating order: {} ({})", order.getOrderNumber(), id);
 
-        // Call Inventory Service
         AvailabilityResponse availability = inventoryClient.checkAvailability(id);
 
-        if (!availability.isCanFulfill() && !order.isPartialAllowed()) {
+        if (!availability.canFulfill() && !order.isPartialAllowed()) {
             order.setStatus(OrderStatus.REJECTED);
             orderRepository.save(order);
             log.info("Order {} REJECTED — cannot fulfill and partial not allowed", order.getOrderNumber());
@@ -123,9 +118,7 @@ public class OrderServiceImpl implements OrderService {
         return availability;
     }
 
-    // ===================================================================
-    // 5) Approve Order
-    // ===================================================================
+
     @Override
     public OrderResponse approveOrder(UUID id, ApproveOrderRequest request) {
         Order order = findOrderOrThrow(id);
@@ -134,12 +127,12 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException("Order must be in VALIDATED status to approve. Current status: " + order.getStatus());
         }
 
-        log.info("Approving order: {} ({}) with type: {}", order.getOrderNumber(), id, request.getApprovalType());
+        log.info("Approving order: {} ({}) with type: {}", order.getOrderNumber(), id, request.approvalType());
 
-        // Fresh availability check
+        // Re-check inventory before approving to ensure stock is still available
         AvailabilityResponse availability = inventoryClient.checkAvailability(id);
 
-        switch (request.getApprovalType()) {
+        switch (request.approvalType()) {
             case FULL -> handleFullApproval(order, availability);
             case AUTO -> handleAutoApproval(order, availability);
             case PARTIAL -> handlePartialApproval(order, request, availability);
@@ -148,15 +141,12 @@ public class OrderServiceImpl implements OrderService {
         calculateTotalAmount(order);
         Order saved = orderRepository.save(order);
 
-        // Reserve approved quantities in Inventory Service
         reserveApprovedItems(saved);
 
         return orderMapper.toResponse(saved);
     }
 
-    // ===================================================================
-    // 6) Cancel Order
-    // ===================================================================
+
     @Override
     public OrderResponse cancelOrder(UUID id) {
         Order order = findOrderOrThrow(id);
@@ -172,13 +162,11 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(saved);
     }
 
-    // ===================================================================
-    // 7) Update Order Status (manual)
-    // ===================================================================
+
     @Override
     public OrderResponse updateOrderStatus(UUID id, UpdateOrderStatusRequest request) {
         Order order = findOrderOrThrow(id);
-        OrderStatus newStatus = request.getStatus();
+        OrderStatus newStatus = request.status();
 
         validateTransition(order.getStatus(), newStatus);
 
@@ -189,9 +177,7 @@ public class OrderServiceImpl implements OrderService {
         return orderMapper.toResponse(saved);
     }
 
-    // ===================================================================
-    //  Private helpers
-    // ===================================================================
+    // --- Helper methods ---
 
     private Order findOrderOrThrow(UUID id) {
         return orderRepository.findById(id)
@@ -215,9 +201,9 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(total);
     }
 
-    // ---------- FULL ----------
+
     private void handleFullApproval(Order order, AvailabilityResponse availability) {
-        if (!availability.isCanFulfill()) {
+        if (!availability.canFulfill()) {
             throw new BusinessException("Cannot fully approve — insufficient stock. Use AUTO or PARTIAL approval.");
         }
         order.getItems().forEach(item -> item.setApprovedQty(item.getRequestedQty()));
@@ -225,15 +211,14 @@ public class OrderServiceImpl implements OrderService {
         log.info("Order {} FULLY APPROVED", order.getOrderNumber());
     }
 
-    // ---------- AUTO ----------
+
     private void handleAutoApproval(Order order, AvailabilityResponse availability) {
-        if (availability.isCanFulfill()) {
-            // Enough stock — full approval
+        if (availability.canFulfill()) {
             order.getItems().forEach(item -> item.setApprovedQty(item.getRequestedQty()));
             order.setStatus(OrderStatus.APPROVED);
             log.info("Order {} AUTO → FULLY APPROVED (sufficient stock)", order.getOrderNumber());
         } else if (order.isPartialAllowed()) {
-            // Use suggested approved quantities
+            // Partial fulfillment — use suggested quantities from the inventory check
             Map<String, Integer> suggestedMap = buildSuggestedMap(availability);
             order.getItems().forEach(item -> {
                 int suggested = suggestedMap.getOrDefault(item.getItemId(), 0);
@@ -246,29 +231,29 @@ public class OrderServiceImpl implements OrderService {
         }
     }
 
-    // ---------- PARTIAL ----------
+
     private void handlePartialApproval(Order order, ApproveOrderRequest request, AvailabilityResponse availability) {
-        if (request.getApprovedItems() == null || request.getApprovedItems().isEmpty()) {
+        if (request.approvedItems() == null || request.approvedItems().isEmpty()) {
             throw new BusinessException("PARTIAL approval requires a list of approved items.");
         }
 
         Map<String, Integer> requestedMap = order.getItems().stream()
                 .collect(Collectors.toMap(OrderItem::getItemId, OrderItem::getRequestedQty));
 
-        for (ApprovedItemRequest ai : request.getApprovedItems()) {
-            Integer requested = requestedMap.get(ai.getItemId());
+        for (ApprovedItemRequest ai : request.approvedItems()) {
+            Integer requested = requestedMap.get(ai.itemId());
             if (requested == null) {
-                throw new BusinessException("Item " + ai.getItemId() + " does not exist in this order.");
+                throw new BusinessException("Item " + ai.itemId() + " does not exist in this order.");
             }
-            if (ai.getApprovedQty() > requested) {
+            if (ai.approvedQty() > requested) {
                 throw new BusinessException(
                         String.format("Approved qty (%d) exceeds requested qty (%d) for item %s",
-                                ai.getApprovedQty(), requested, ai.getItemId()));
+                                ai.approvedQty(), requested, ai.itemId()));
             }
         }
 
-        Map<String, Integer> approvedMap = request.getApprovedItems().stream()
-                .collect(Collectors.toMap(ApprovedItemRequest::getItemId, ApprovedItemRequest::getApprovedQty));
+        Map<String, Integer> approvedMap = request.approvedItems().stream()
+                .collect(Collectors.toMap(ApprovedItemRequest::itemId, ApprovedItemRequest::approvedQty));
 
         boolean allFull = true;
         for (OrderItem item : order.getItems()) {
@@ -284,15 +269,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private Map<String, Integer> buildSuggestedMap(AvailabilityResponse availability) {
-        if (availability.getSuggestedApprovedItems() == null) return Map.of();
-        return availability.getSuggestedApprovedItems().stream()
+        if (availability.suggestedApprovedItems() == null) return Map.of();
+        return availability.suggestedApprovedItems().stream()
                 .collect(Collectors.toMap(
-                        AvailabilityResponse.SuggestedApprovedItem::getItemId,
-                        AvailabilityResponse.SuggestedApprovedItem::getApprovedQty));
+                        AvailabilityResponse.SuggestedApprovedItem::itemId,
+                        AvailabilityResponse.SuggestedApprovedItem::approvedQty));
     }
 
     private void reserveApprovedItems(Order order) {
-        List<InventoryClient.ReserveItem> reserveItems = order.getItems().stream()
+        var reserveItems = order.getItems().stream()
                 .filter(item -> item.getApprovedQty() > 0)
                 .map(item -> new InventoryClient.ReserveItem(item.getItemId(), item.getApprovedQty()))
                 .collect(Collectors.toList());

@@ -20,6 +20,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,12 +61,16 @@ class OrderControllerTest {
     private static final String BASE_URL = "/api/v1/orders";
 
     private OrderResponse buildSampleResponse() {
+        return buildSampleResponseWithStatus(OrderStatus.CREATED);
+    }
+
+    private OrderResponse buildSampleResponseWithStatus(OrderStatus status) {
         UUID id = UUID.randomUUID();
         return OrderResponse.builder()
                 .id(id)
                 .orderNumber("ORD-2026-000001")
                 .customerId("CUST-LK-001")
-                .status(OrderStatus.CREATED)
+                .status(status)
                 .partialAllowed(true)
                 .totalAmount(new BigDecimal("5000.00"))
                 .createdAt(OffsetDateTime.now())
@@ -87,9 +94,6 @@ class OrderControllerTest {
                 .build();
     }
 
-    // ==================================================================
-    //  POST /api/v1/orders — Create Order
-    // ==================================================================
     @Nested
     @DisplayName("POST /api/v1/orders")
     class CreateOrderEndpoint {
@@ -184,9 +188,6 @@ class OrderControllerTest {
         }
     }
 
-    // ==================================================================
-    //  GET /api/v1/orders/{id}
-    // ==================================================================
     @Nested
     @DisplayName("GET /api/v1/orders/{id}")
     class GetOrderEndpoint {
@@ -195,11 +196,11 @@ class OrderControllerTest {
         @DisplayName("200 — Order found")
         void getOrder_found() throws Exception {
             OrderResponse response = buildSampleResponse();
-            when(orderService.getOrderById(response.getId())).thenReturn(response);
+            when(orderService.getOrderById(response.id())).thenReturn(response);
 
-            mockMvc.perform(get(BASE_URL + "/{id}", response.getId()))
+            mockMvc.perform(get(BASE_URL + "/{id}", response.id()))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.id").value(response.getId().toString()))
+                    .andExpect(jsonPath("$.id").value(response.id().toString()))
                     .andExpect(jsonPath("$.orderNumber").value("ORD-2026-000001"));
         }
 
@@ -215,9 +216,6 @@ class OrderControllerTest {
         }
     }
 
-    // ==================================================================
-    //  GET /api/v1/orders
-    // ==================================================================
     @Nested
     @DisplayName("GET /api/v1/orders")
     class ListOrdersEndpoint {
@@ -225,27 +223,26 @@ class OrderControllerTest {
         @Test
         @DisplayName("200 — List all orders")
         void listOrders_all() throws Exception {
-            when(orderService.getAllOrders(null)).thenReturn(List.of(buildSampleResponse()));
+            Page<OrderResponse> page = new PageImpl<>(List.of(buildSampleResponse()));
+            when(orderService.getAllOrders(eq(null), any(Pageable.class))).thenReturn(page);
 
             mockMvc.perform(get(BASE_URL))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(1)));
+                    .andExpect(jsonPath("$.content", hasSize(1)));
         }
 
         @Test
         @DisplayName("200 — List orders filtered by status")
         void listOrders_byStatus() throws Exception {
-            when(orderService.getAllOrders(OrderStatus.APPROVED)).thenReturn(List.of());
+            Page<OrderResponse> page = new PageImpl<>(List.of());
+            when(orderService.getAllOrders(eq(OrderStatus.APPROVED), any(Pageable.class))).thenReturn(page);
 
             mockMvc.perform(get(BASE_URL).param("status", "APPROVED"))
                     .andExpect(status().isOk())
-                    .andExpect(jsonPath("$", hasSize(0)));
+                    .andExpect(jsonPath("$.content", hasSize(0)));
         }
     }
 
-    // ==================================================================
-    //  POST /api/v1/orders/{id}/validate
-    // ==================================================================
     @Nested
     @DisplayName("POST /api/v1/orders/{id}/validate")
     class ValidateOrderEndpoint {
@@ -278,9 +275,6 @@ class OrderControllerTest {
         }
     }
 
-    // ==================================================================
-    //  POST /api/v1/orders/{id}/approve
-    // ==================================================================
     @Nested
     @DisplayName("POST /api/v1/orders/{id}/approve")
     class ApproveOrderEndpoint {
@@ -289,8 +283,7 @@ class OrderControllerTest {
         @DisplayName("200 — Full approval")
         void approveOrder_full() throws Exception {
             UUID id = UUID.randomUUID();
-            OrderResponse response = buildSampleResponse();
-            response.setStatus(OrderStatus.APPROVED);
+            OrderResponse response = buildSampleResponseWithStatus(OrderStatus.APPROVED);
             when(orderService.approveOrder(eq(id), any(ApproveOrderRequest.class))).thenReturn(response);
 
             ApproveOrderRequest request = ApproveOrderRequest.builder()
@@ -316,9 +309,6 @@ class OrderControllerTest {
         }
     }
 
-    // ==================================================================
-    //  POST /api/v1/orders/{id}/cancel
-    // ==================================================================
     @Nested
     @DisplayName("POST /api/v1/orders/{id}/cancel")
     class CancelOrderEndpoint {
@@ -327,8 +317,7 @@ class OrderControllerTest {
         @DisplayName("200 — Order cancelled")
         void cancelOrder_success() throws Exception {
             UUID id = UUID.randomUUID();
-            OrderResponse response = buildSampleResponse();
-            response.setStatus(OrderStatus.CANCELLED);
+            OrderResponse response = buildSampleResponseWithStatus(OrderStatus.CANCELLED);
             when(orderService.cancelOrder(id)).thenReturn(response);
 
             mockMvc.perform(post(BASE_URL + "/{id}/cancel", id))
@@ -349,9 +338,6 @@ class OrderControllerTest {
         }
     }
 
-    // ==================================================================
-    //  PATCH /api/v1/orders/{id}/status
-    // ==================================================================
     @Nested
     @DisplayName("PATCH /api/v1/orders/{id}/status")
     class UpdateStatusEndpoint {
@@ -360,8 +346,7 @@ class OrderControllerTest {
         @DisplayName("200 — Status updated")
         void updateStatus_success() throws Exception {
             UUID id = UUID.randomUUID();
-            OrderResponse response = buildSampleResponse();
-            response.setStatus(OrderStatus.PICKING_REQUESTED);
+            OrderResponse response = buildSampleResponseWithStatus(OrderStatus.PICKING_REQUESTED);
             when(orderService.updateOrderStatus(eq(id), any(UpdateOrderStatusRequest.class)))
                     .thenReturn(response);
 

@@ -21,8 +21,8 @@ public class InventoryClient {
     private final RestClient inventoryRestClient;
 
     /**
-     * Check inventory availability for a given order.
-     * GET /inventory/availability?orderId={uuid}
+     * Checks if inventory can fulfill the given order.
+     * Calls: GET /inventory/availability?orderId={uuid}
      */
     public AvailabilityResponse checkAvailability(UUID orderId) {
         try {
@@ -38,8 +38,8 @@ public class InventoryClient {
             }
 
             log.debug("Inventory availability result - canFulfill: {}, missingItems: {}",
-                    response.isCanFulfill(),
-                    response.getMissingItems() != null ? response.getMissingItems().size() : 0);
+                    response.canFulfill(),
+                    response.missingItems() != null ? response.missingItems().size() : 0);
 
             return response;
         } catch (RestClientException ex) {
@@ -49,8 +49,8 @@ public class InventoryClient {
     }
 
     /**
-     * Reserve inventory for approved order items.
-     * POST /inventory/reservations
+     * Reserves stock for the approved items in an order.
+     * Calls: POST /inventory/reservations
      */
     public void reserveInventory(UUID orderId, List<ReserveItem> items) {
         try {
@@ -75,8 +75,6 @@ public class InventoryClient {
         }
     }
 
-    /**
-     * DTO for inventory reservation item.
-     */
+    /** Payload sent to Inventory Service when reserving stock */
     public record ReserveItem(String itemId, int quantity) {}
 }

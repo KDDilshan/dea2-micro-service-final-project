@@ -1,27 +1,17 @@
 package com.wms.orderservice.dto.response;
 
-import lombok.*;
-
+import lombok.Builder;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class AvailabilityResponse {
-
-    private boolean canFulfill;
-    private List<MissingItemResponse> missingItems;
-    private List<SuggestedApprovedItem> suggestedApprovedItems;
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
+public record AvailabilityResponse(
+        boolean canFulfill,
+        List<MissingItemResponse> missingItems,
+        List<SuggestedApprovedItem> suggestedApprovedItems
+) {
     @Builder
-    public static class SuggestedApprovedItem {
-        private String itemId;
-        private int approvedQty;
-    }
+    public record SuggestedApprovedItem(
+            String itemId,
+            int approvedQty
+    ) {}
 }

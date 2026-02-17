@@ -18,11 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -33,9 +36,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    // ---------------------------------------------------------------
-    // 1) POST /api/v1/orders — Create order
-    // ---------------------------------------------------------------
     @PostMapping
     @Operation(
             summary = "Create a new order",
@@ -62,9 +62,6 @@ public class OrderController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    // ---------------------------------------------------------------
-    // 2) GET /api/v1/orders/{id} — Get order by ID
-    // ---------------------------------------------------------------
     @GetMapping("/{id}")
     @Operation(
             summary = "Get order by ID",
@@ -83,33 +80,28 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ---------------------------------------------------------------
-    // 3) GET /api/v1/orders?status=APPROVED — List orders
-    // ---------------------------------------------------------------
     @GetMapping
     @Operation(
             summary = "List orders",
             description = """
-                    Returns all orders. Optionally filter by status.
+                    Returns a paginated list of orders. Optionally filter by status.
                     
                     **Available statuses:** CREATED, VALIDATED, APPROVED, PARTIALLY_APPROVED, REJECTED, CANCELLED, PICKING_REQUESTED, PACKED, DISPATCHED, DELIVERED
                     """
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "List of orders returned",
-                    content = @Content(array = @ArraySchema(schema = @Schema(implementation = OrderResponse.class))))
+                    content = @Content(schema = @Schema(implementation = Page.class)))
     })
-    public ResponseEntity<List<OrderResponse>> getAllOrders(
+    public ResponseEntity<Page<OrderResponse>> getAllOrders(
             @Parameter(description = "Filter by order status (optional)", example = "CREATED",
                     schema = @Schema(implementation = OrderStatus.class))
-            @RequestParam(required = false) OrderStatus status) {
-        List<OrderResponse> responses = orderService.getAllOrders(status);
+            @RequestParam(required = false) OrderStatus status,
+            @ParameterObject @PageableDefault(size = 20) Pageable pageable) {
+        Page<OrderResponse> responses = orderService.getAllOrders(status, pageable);
         return ResponseEntity.ok(responses);
     }
 
-    // ---------------------------------------------------------------
-    // 4) POST /api/v1/orders/{id}/validate — Validate order
-    // ---------------------------------------------------------------
     @PostMapping("/{id}/validate")
     @Operation(
             summary = "Validate order against inventory",
@@ -143,9 +135,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ---------------------------------------------------------------
-    // 5) POST /api/v1/orders/{id}/approve — Approve order
-    // ---------------------------------------------------------------
     @PostMapping("/{id}/approve")
     @Operation(
             summary = "Approve order",
@@ -183,9 +172,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ---------------------------------------------------------------
-    // 6) POST /api/v1/orders/{id}/cancel — Cancel order
-    // ---------------------------------------------------------------
     @PostMapping("/{id}/cancel")
     @Operation(
             summary = "Cancel order",
@@ -212,9 +198,6 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    // ---------------------------------------------------------------
-    // 7) PATCH /api/v1/orders/{id}/status — Update status manually
-    // ---------------------------------------------------------------
     @PatchMapping("/{id}/status")
     @Operation(
             summary = "Update order status",

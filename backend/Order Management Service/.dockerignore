@@ -1,0 +1,7 @@
+target/
+logs/
+.mvn/
+.git/
+.idea/
+*.md
+**/*.class

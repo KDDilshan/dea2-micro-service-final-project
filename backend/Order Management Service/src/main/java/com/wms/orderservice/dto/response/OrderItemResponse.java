@@ -1,20 +1,15 @@
 package com.wms.orderservice.dto.response;
 
-import lombok.*;
+import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class OrderItemResponse {
-
-    private UUID id;
-    private String itemId;
-    private int requestedQty;
-    private int approvedQty;
-    private BigDecimal unitPrice;
-}
+public record OrderItemResponse(
+        UUID id,
+        String itemId,
+        int requestedQty,
+        int approvedQty,
+        BigDecimal unitPrice
+) {}

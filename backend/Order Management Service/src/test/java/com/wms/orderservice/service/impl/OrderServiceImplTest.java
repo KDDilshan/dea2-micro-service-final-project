@@ -26,6 +26,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -99,9 +103,6 @@ class OrderServiceImplTest {
         item2.setOrder(sampleOrder);
     }
 
-    // ==================================================================
-    //  CREATE ORDER
-    // ==================================================================
     @Nested
     @DisplayName("Create Order")
     class CreateOrderTests {
@@ -133,18 +134,15 @@ class OrderServiceImplTest {
             OrderResponse response = orderService.createOrder(request);
 
             assertNotNull(response);
-            assertEquals("CUST-LK-001", response.getCustomerId());
-            assertEquals(OrderStatus.CREATED, response.getStatus());
-            assertEquals("ORD-2026-000001", response.getOrderNumber());
-            assertEquals(1, response.getItems().size());
+            assertEquals("CUST-LK-001", response.customerId());
+            assertEquals(OrderStatus.CREATED, response.status());
+            assertEquals("ORD-2026-000001", response.orderNumber());
+            assertEquals(1, response.items().size());
             verify(orderRepository).save(any(Order.class));
             verify(orderNumberGenerator).generateOrderNumber();
         }
     }
 
-    // ==================================================================
-    //  GET ORDER
-    // ==================================================================
     @Nested
     @DisplayName("Get Order")
     class GetOrderTests {
@@ -157,8 +155,8 @@ class OrderServiceImplTest {
             OrderResponse response = orderService.getOrderById(orderId);
 
             assertNotNull(response);
-            assertEquals(orderId, response.getId());
-            assertEquals("ORD-2026-000001", response.getOrderNumber());
+            assertEquals(orderId, response.id());
+            assertEquals("ORD-2026-000001", response.orderNumber());
         }
 
         @Test
@@ -171,41 +169,39 @@ class OrderServiceImplTest {
         }
     }
 
-    // ==================================================================
-    //  GET ALL ORDERS
-    // ==================================================================
     @Nested
     @DisplayName("Get All Orders")
     class GetAllOrdersTests {
 
+        private final Pageable pageable = PageRequest.of(0, 20);
+
         @Test
         @DisplayName("Should return all orders when no filter")
         void getAllOrders_noFilter() {
-            when(orderRepository.findAll()).thenReturn(List.of(sampleOrder));
+            Page<Order> orderPage = new PageImpl<>(List.of(sampleOrder));
+            when(orderRepository.findAll(pageable)).thenReturn(orderPage);
 
-            List<OrderResponse> responses = orderService.getAllOrders(null);
+            Page<OrderResponse> responses = orderService.getAllOrders(null, pageable);
 
-            assertEquals(1, responses.size());
-            verify(orderRepository).findAll();
-            verify(orderRepository, never()).findByStatus(any());
+            assertEquals(1, responses.getContent().size());
+            verify(orderRepository).findAll(pageable);
+            verify(orderRepository, never()).findByStatus(any(), any());
         }
 
         @Test
         @DisplayName("Should filter by status when provided")
         void getAllOrders_withStatusFilter() {
-            when(orderRepository.findByStatus(OrderStatus.CREATED)).thenReturn(List.of(sampleOrder));
+            Page<Order> orderPage = new PageImpl<>(List.of(sampleOrder));
+            when(orderRepository.findByStatus(OrderStatus.CREATED, pageable)).thenReturn(orderPage);
 
-            List<OrderResponse> responses = orderService.getAllOrders(OrderStatus.CREATED);
+            Page<OrderResponse> responses = orderService.getAllOrders(OrderStatus.CREATED, pageable);
 
-            assertEquals(1, responses.size());
-            verify(orderRepository).findByStatus(OrderStatus.CREATED);
-            verify(orderRepository, never()).findAll();
+            assertEquals(1, responses.getContent().size());
+            verify(orderRepository).findByStatus(OrderStatus.CREATED, pageable);
+            verify(orderRepository, never()).findAll(pageable);
         }
     }
 
-    // ==================================================================
-    //  VALIDATE ORDER
-    // ==================================================================
     @Nested
     @DisplayName("Validate Order")
     class ValidateOrderTests {
@@ -223,7 +219,7 @@ class OrderServiceImplTest {
 
             AvailabilityResponse response = orderService.validateOrder(orderId);
 
-            assertTrue(response.isCanFulfill());
+            assertTrue(response.canFulfill());
             assertEquals(OrderStatus.VALIDATED, sampleOrder.getStatus());
             verify(orderRepository).save(sampleOrder);
         }
@@ -244,7 +240,7 @@ class OrderServiceImplTest {
 
             AvailabilityResponse response = orderService.validateOrder(orderId);
 
-            assertFalse(response.isCanFulfill());
+            assertFalse(response.canFulfill());
             assertEquals(OrderStatus.REJECTED, sampleOrder.getStatus());
         }
 
@@ -275,9 +271,6 @@ class OrderServiceImplTest {
         }
     }
 
-    // ==================================================================
-    //  APPROVE ORDER
-    // ==================================================================
     @Nested
     @DisplayName("Approve Order")
     class ApproveOrderTests {
@@ -467,9 +460,6 @@ class OrderServiceImplTest {
         }
     }
 
-    // ==================================================================
-    //  CANCEL ORDER
-    // ==================================================================
     @Nested
     @DisplayName("Cancel Order")
     class CancelOrderTests {
@@ -504,9 +494,6 @@ class OrderServiceImplTest {
         }
     }
 
-    // ==================================================================
-    //  UPDATE STATUS
-    // ==================================================================
     @Nested
     @DisplayName("Update Order Status")
     class UpdateStatusTests {
