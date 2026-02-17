@@ -1,0 +1,58 @@
+package com.wms.workforce_equipment_service.controller;
+
+import com.wms.workforce_equipment_service.dto.request.EquipmentAssignmentRequest;
+import com.wms.workforce_equipment_service.dto.response.EquipmentAssignmentResponse;
+import com.wms.workforce_equipment_service.service.IEquipmentAssignmentService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/equipment-assignments")
+@RequiredArgsConstructor
+public class EquipmentAssignmentController {
+
+    private final IEquipmentAssignmentService assignmentService;
+
+    @GetMapping
+    public ResponseEntity<List<EquipmentAssignmentResponse>> getAllAssignments() {
+        return ResponseEntity.ok(assignmentService.getAllAssignments());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<EquipmentAssignmentResponse> getAssignmentById(@PathVariable Long id) {
+        return ResponseEntity.ok(assignmentService.getAssignmentById(id));
+    }
+
+    @GetMapping("/equipment/{equipmentId}")
+    public ResponseEntity<List<EquipmentAssignmentResponse>> getAssignmentsByEquipmentId(@PathVariable Long equipmentId) {
+        return ResponseEntity.ok(assignmentService.getAssignmentsByEquipmentId(equipmentId));
+    }
+
+    @GetMapping("/worker/{workerId}")
+    public ResponseEntity<List<EquipmentAssignmentResponse>> getAssignmentsByWorkerId(@PathVariable Long workerId) {
+        return ResponseEntity.ok(assignmentService.getAssignmentsByWorkerId(workerId));
+    }
+
+    @PostMapping
+    public ResponseEntity<EquipmentAssignmentResponse> createAssignment(@Valid @RequestBody EquipmentAssignmentRequest request) {
+        EquipmentAssignmentResponse created = assignmentService.createAssignment(request);
+        return new ResponseEntity<>(created, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EquipmentAssignmentResponse> updateAssignment(@PathVariable Long id,
+                                                                         @Valid @RequestBody EquipmentAssignmentRequest request) {
+        return ResponseEntity.ok(assignmentService.updateAssignment(id, request));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAssignment(@PathVariable Long id) {
+        assignmentService.deleteAssignment(id);
+        return ResponseEntity.noContent().build();
+    }
+}
