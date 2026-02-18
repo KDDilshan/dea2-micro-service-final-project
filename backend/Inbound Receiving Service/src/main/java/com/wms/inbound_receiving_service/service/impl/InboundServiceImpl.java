@@ -1,10 +1,8 @@
 package com.wms.inbound_receiving_service.service.impl;
 
-import com.wms.inbound_receiving_service.dto.InboundRequestDTO;
-import com.wms.inbound_receiving_service.dto.InboundResponseDTO;
-import com.wms.inbound_receiving_service.entity.InboundShipment;
-import com.wms.inbound_receiving_service.exception.ResourceNotFoundException;
-import com.wms.inbound_receiving_service.repository.InboundRepository;
+import com.wms.inbound_receiving_service.dto.*;
+import com.wms.inbound_receiving_service.model.*;
+import com.wms.inbound_receiving_service.repository.*;
 import com.wms.inbound_receiving_service.service.InboundService;
 import com.wms.inbound_receiving_service.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
