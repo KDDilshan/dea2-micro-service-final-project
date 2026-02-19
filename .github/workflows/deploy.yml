@@ -1,0 +1,45 @@
+name: Deploy Backend to Azure VM
+
+on:
+  push:
+    branches:
+      - deployment
+    paths:
+      - "backend/Workforce & Equipment Service/**"
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: "21"
+          distribution: "corretto"
+
+      - name: Build with Maven
+        working-directory: "./backend/Workforce & Equipment Service"
+        run: mvn clean package -DskipTests
+
+      - name: Deploy and Restart Application
+        run: |
+          # 1. Create the deployment directory
+          mkdir -p /home/nippa/backend-app
+
+          # 2. Copy the .jar specifically from the backend's target folder
+          cp 'backend/Workforce & Equipment Service/target/'*.jar /home/nippa/backend-app/application.jar
+
+          # 3. Create the .env file with database credentials securely
+          echo "DB_URL=${{ secrets.DB_URL }}" > /home/nippa/backend-app/.env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> /home/nippa/backend-app/.env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/nippa/backend-app/.env
+
+          # 4. Secure the .env file so only the 'nippa' user can read it
+          chmod 600 /home/nippa/backend-app/.env
+
+          # 5. Restart the background service
+          sudo systemctl restart spring-backend.service
