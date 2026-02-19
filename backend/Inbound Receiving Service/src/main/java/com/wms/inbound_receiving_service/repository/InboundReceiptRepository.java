@@ -10,12 +10,9 @@ import java.util.Optional;
 @Repository
 public interface InboundReceiptRepository extends JpaRepository<InboundReceipt, Long> {
 
-    // Useful for your Dashboard "Latest Arrivals" view
     List<InboundReceipt> findAllByOrderByReceiptDateDesc();
 
-    // To prevent duplicate entries when creating new receipts
     Optional<InboundReceipt> findByGrnNumber(String grnNumber);
 
-    // To filter receipts by status (e.g., "PENDING", "VERIFIED")
     List<InboundReceipt> findByStatus(String status);
 }

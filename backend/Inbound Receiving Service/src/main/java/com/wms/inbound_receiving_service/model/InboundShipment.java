@@ -28,5 +28,5 @@ public class InboundShipment {
 
     private int quantity;
 
-    private String status; // e.g., PENDING, RECEIVED, CANCELLED
+    private String status;
 }

@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class InboundServiceImpl implements InboundService {
 
-    private final InboundRepository shipmentRepository; // Added for shipments table
+    private final InboundRepository shipmentRepository;
     private final InboundReceiptRepository receiptRepository;
-    private final InboundReceiptItemRepository receiptItemRepository; // Added for dashboard
+    private final InboundReceiptItemRepository receiptItemRepository;
     private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
 
@@ -49,8 +49,6 @@ public class InboundServiceImpl implements InboundService {
         InboundReceipt saved = receiptRepository.save(receipt);
         return mapToResponse(saved);
     }
-
-    // --- Raw Data Methods for Dashboard ---
 
     @Override
     public List<InboundResponseDTO> getAllShipments() {
@@ -90,7 +88,6 @@ public class InboundServiceImpl implements InboundService {
                 .collect(Collectors.toList());
     }
 
-    // --- Standard CRUD Methods ---
 
     @Override
     public InboundResponseDTO getShipmentById(Long id) {

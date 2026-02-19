@@ -14,5 +14,5 @@ public class InboundReceiptItemDTO {
     private Long receiptId;
     private String productName;
     private int quantityReceived;
-    private String condition; // e.g., "Good", "Damaged"
+    private String condition;
 }

@@ -9,9 +9,7 @@ import java.util.List;
 @Repository
 public interface InboundRepository extends JpaRepository<InboundShipment, Long> {
 
-    // Useful for the dashboard to filter by status (e.g., PENDING, RECEIVED)
     List<InboundShipment> findByStatus(String status);
 
-    // Search by supplier name for the shipment table
     List<InboundShipment> findBySupplierNameContainingIgnoreCase(String supplierName);
 }

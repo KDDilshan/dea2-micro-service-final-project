@@ -16,11 +16,11 @@ public class InboundReceiptItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long receiptItemId; // Consistent with the Receipt 'id' naming convention
+    private Long receiptItemId;
 
     private Integer quantityReceived;
     private String batchNo;
-    private String qualityStatus; // e.g., "Good", "Damaged", "Hold"
+    private String qualityStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receipt_id", nullable = false)

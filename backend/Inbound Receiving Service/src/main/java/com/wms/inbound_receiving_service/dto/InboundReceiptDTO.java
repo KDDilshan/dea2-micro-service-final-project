@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class InboundReceiptDTO {
     private Long id;
     private String receiptNumber;
-    private String supplierName; // This must exist for .supplierName() to work
+    private String supplierName;
     private LocalDateTime receivedAt;
     private String status;
 }

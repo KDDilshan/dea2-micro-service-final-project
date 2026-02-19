@@ -19,26 +19,23 @@ public class InboundReceipt {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long receiptId; // Consistent with your DTO 'id' field
+    private Long receiptId;
 
     @Column(unique = true, nullable = false)
-    private String grnNumber; // Your unique tracking reference
+    private String grnNumber;
 
     private LocalDate receiptDate;
 
-    private String status; // e.g., RECEIVED, VERIFIED
+    private String status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
     private Supplier supplier;
-
-    // Helper to link back to the original shipment if needed
     private Long shipmentId;
 
     @OneToMany(mappedBy = "receipt", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InboundReceiptItem> items = new ArrayList<>();
 
-    // Helper method to add items and maintain bi-directional relationship
     public void addItem(InboundReceiptItem item) {
         items.add(item);
         item.setReceipt(this);

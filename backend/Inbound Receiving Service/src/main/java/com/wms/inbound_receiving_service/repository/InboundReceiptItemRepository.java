@@ -7,10 +7,6 @@ import java.util.List;
 
 @Repository
 public interface InboundReceiptItemRepository extends JpaRepository<InboundReceiptItem, Long> {
-
-    // CHANGE THIS: From findByReceiptId to findByReceipt_ReceiptId
-    // The underscore tells JPA to look inside the 'Receipt' object for the 'receiptId' field
     List<InboundReceiptItem> findByReceipt_ReceiptId(Long receiptId);
-
     List<InboundReceiptItem> findByQualityStatus(String qualityStatus);
 }

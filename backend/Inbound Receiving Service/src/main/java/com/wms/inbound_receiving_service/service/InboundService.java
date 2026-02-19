@@ -9,8 +9,6 @@ public interface InboundService {
     List<InboundResponseDTO> getAllShipments();
     InboundResponseDTO updateShipmentStatus(Long id, String status);
     void deleteShipment(Long id);
-
-    // Add these two to fix the Controller errors
     List<InboundReceiptDTO> getAllReceipts();
     List<InboundReceiptItemDTO> getAllReceiptItems();
 }
