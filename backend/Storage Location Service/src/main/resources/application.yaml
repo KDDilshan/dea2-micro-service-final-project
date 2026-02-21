@@ -4,10 +4,10 @@ spring:
   application:
     name: Storage-Location-Service
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/storage_location_db}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: ${DB_DDL_AUTO:update}
@@ -15,7 +15,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
 
 springdoc:
   api-docs:
