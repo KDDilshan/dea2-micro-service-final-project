@@ -34,9 +34,9 @@ jobs:
           cp 'backend/PickingPackingService/target/'*.jar /home/azureuser/backend-app/application.jar
 
           # 3. Create the .env file with database credentials securely
-          echo "DB_URL=${{ secrets.DB_URL }}" > /home/azureuser/backend-app/.env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> /home/azureuser/backend-app/.env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> /home/azureuser/backend-app/.env
+          echo "SPRING_DATASOURCE_URL_LOCAL=${{ secrets.SPRING_DATASOURCE_URL_LOCAL }}" > /home/azureuser/backend-app/.env
+          echo "SPRING_DATASOURCE_USERNAME_LOCAL=${{ secrets.SPRING_DATASOURCE_USERNAME_LOCAL }}" >> /home/azureuser/backend-app/.env
+          echo "SPRING_DATASOURCE_PASSWORD_LOCAL=${{ secrets.SPRING_DATASOURCE_PASSWORD_LOCAL }}" >> /home/azureuser/backend-app/.env
 
           # 4. Secure the .env file so only the 'azureuser' user can read it
           chmod 600 /home/azureuser/backend-app/.env
