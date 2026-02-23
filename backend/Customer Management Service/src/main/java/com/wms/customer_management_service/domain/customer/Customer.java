@@ -23,6 +23,7 @@ import java.util.UUID;
 @Builder
 public class Customer {
 	@Id
+	@GeneratedValue
 	@Column(name = "customer_id", updatable = false, nullable = false)
 	private UUID customerId;
 

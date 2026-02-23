@@ -17,14 +17,12 @@ import java.util.stream.Collectors;
 public class CustomerMapper {
 	public Customer toEntity(CustomerRequest request) {
 		Customer customer = new Customer();
-		customer.setCustomerId(UUID.randomUUID());
 		customer.setCustomerName(request.getCustomerName());
 		customer.setEmail(request.getEmail());
 		customer.setPhone(request.getPhone());
 		if (request.getAddresses() != null) {
 			List<Address> addresses = request.getAddresses().stream().map(addrReq -> {
 				Address address = new Address();
-				address.setAddressId(UUID.randomUUID());
 				address.setType(addrReq.getType());
 				address.setLine1(addrReq.getLine1());
 				address.setLine2(addrReq.getLine2());

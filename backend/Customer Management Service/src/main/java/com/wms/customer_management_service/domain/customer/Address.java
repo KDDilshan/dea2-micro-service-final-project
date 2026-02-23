@@ -21,6 +21,7 @@ import java.util.UUID;
 @Builder
 public class Address {
     @Id
+    @GeneratedValue
     @Column(name = "address_id", updatable = false, nullable = false)
     private UUID addressId;
 
