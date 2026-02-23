@@ -58,15 +58,15 @@ public class CustomerServiceImpl implements CustomerService {
 	@Override
 	@Transactional(readOnly = true)
 	public CustomerResponse getCustomerById(UUID id) {
-		Customer customer = customerRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException("Customer not found"));
+		Customer customer = customerRepository.findByCustomerIdAndStatus(id, CustomerStatus.ACTIVE)
+				.orElseThrow(() -> new NotFoundException("Customer not found or is inactive"));
 		return customerMapper.toResponse(customer);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
 	public List<CustomerResponse> getAllCustomers() {
-		return customerRepository.findAll().stream()
+		return customerRepository.findAllByStatus(CustomerStatus.ACTIVE).stream()
 				.map(customerMapper::toResponse)
 				.collect(Collectors.toList());
 	}
