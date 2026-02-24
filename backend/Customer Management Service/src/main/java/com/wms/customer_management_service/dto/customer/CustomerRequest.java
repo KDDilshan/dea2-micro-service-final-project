@@ -15,16 +15,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Data
 @Schema(description = "Customer registration/update request")
 public class CustomerRequest {
-	@Schema(description = "Customer name", example = "Saman Kumara")
+	@Schema(description = "Customer name")
 	@NotBlank(message = "Customer name is required")
 	private String customerName;
 
-	@Schema(description = "Customer email", example = "saman@email.com")
+	@Schema(description = "Customer email")
 	@NotBlank(message = "Email is required")
 	@Email(message = "Invalid email format")
 	private String email;
 
-	@Schema(description = "Customer phone", example = "0771234567")
+	@Schema(description = "Customer phone")
 	@NotBlank(message = "Phone is required")
 	private String phone;
 
@@ -35,30 +35,30 @@ public class CustomerRequest {
 	@Data
 	@Schema(description = "Address request")
 	public static class AddressRequest {
-		@Schema(description = "Address type", example = "BILLING")
+		@Schema(description = "Address type")
 		@NotNull(message = "Address type is required")
 		private AddressType type;
 
-		@Schema(description = "Line 1", example = "No 123, Orchid Lane")
+		@Schema(description = "Line 1")
 		@NotBlank(message = "Line1 is required")
 		private String line1;
 
-		@Schema(description = "Line 2", example = "Apt 4")
+		@Schema(description = "Line 2")
 		private String line2;
 
-		@Schema(description = "City", example = "Colombo")
+		@Schema(description = "City")
 		@NotBlank(message = "City is required")
 		private String city;
 
-		@Schema(description = "District", example = "Western")
+		@Schema(description = "District")
 		@NotBlank(message = "District is required")
 		private String district;
 
-		@Schema(description = "Postal code", example = "10100")
+		@Schema(description = "Postal code")
 		@NotBlank(message = "Postal code is required")
 		private String postalCode;
 
-		@Schema(description = "Country", example = "Sri Lanka")
+		@Schema(description = "Country")
 		@NotBlank(message = "Country is required")
 		private String country;
 	}

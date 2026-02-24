@@ -14,19 +14,19 @@ import java.util.UUID;
 @Data
 @Schema(description = "Customer response")
 public class CustomerResponse {
-	@Schema(description = "Customer ID", example = "3a6e5f84-5717-4562-b3fc-2c3f9636afa6")
+	@Schema(description = "Customer ID")
 	private UUID customerId;
 
-	@Schema(description = "Customer name", example = "Saman Kumara")
+	@Schema(description = "Customer name")
 	private String customerName;
 
-	@Schema(description = "Customer email", example = "saman@email.com")
+	@Schema(description = "Customer email")
 	private String email;
 
-	@Schema(description = "Customer phone", example = "0771234567")
+	@Schema(description = "Customer phone")
 	private String phone;
 
-	@Schema(description = "Customer status", example = "ACTIVE")
+	@Schema(description = "Customer status")
 	private CustomerStatus status;
 
 	@Schema(description = "List of addresses")
@@ -35,28 +35,28 @@ public class CustomerResponse {
 	@Data
 	@Schema(description = "Address response")
 	public static class AddressResponse {
-		@Schema(description = "Address ID", example = "3a6e5f84-5717-4562-b3fc-2c3f9636afa6")
+		@Schema(description = "Address ID")
 		private UUID addressId;
 
-		@Schema(description = "Address type", example = "BILLING")
+		@Schema(description = "Address type")
 		private AddressType type;
 
-		@Schema(description = "Line 1", example = "No 123, Orchid Lane")
+		@Schema(description = "Line 1")
 		private String line1;
 
-		@Schema(description = "Line 2", example = "Apt 4")
+		@Schema(description = "Line 2")
 		private String line2;
 
-		@Schema(description = "City", example = "Colombo")
+		@Schema(description = "City")
 		private String city;
 
-		@Schema(description = "District", example = "Western")
+		@Schema(description = "District")
 		private String district;
 
-		@Schema(description = "Postal code", example = "10100")
+		@Schema(description = "Postal code")
 		private String postalCode;
 
-		@Schema(description = "Country", example = "Sri Lanka")
+		@Schema(description = "Country")
 		private String country;
 	}
 }
