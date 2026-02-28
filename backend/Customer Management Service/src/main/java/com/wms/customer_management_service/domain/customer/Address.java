@@ -1,5 +1,6 @@
 package com.wms.customer_management_service.domain.customer;
 
+import com.wms.customer_management_service.enums.AddressType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -8,6 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+/**
+ * Entity representing an address (billing or shipping).
+ */
 @Entity
 @Table(name = "address")
 @Getter
@@ -17,6 +21,7 @@ import java.util.UUID;
 @Builder
 public class Address {
     @Id
+    @GeneratedValue
     @Column(name = "address_id", updatable = false, nullable = false)
     private UUID addressId;
 
@@ -24,8 +29,9 @@ public class Address {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type; // BILLING or SHIPPING
+    private AddressType type; // BILLING or SHIPPING
 
     @Column(nullable = false)
     private String line1;

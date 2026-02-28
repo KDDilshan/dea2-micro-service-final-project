@@ -8,10 +8,12 @@ import java.util.List;
  * Service interface for customer operations.
  * Follows best practice: Interfaces in a separate package.
  */
+import java.util.UUID;
+
 public interface CustomerService {
     CustomerResponse registerCustomer(CustomerRequest request);
-    CustomerResponse updateCustomer(Long id, CustomerRequest request);
-    CustomerResponse getCustomerById(Long id);
+    CustomerResponse updateCustomer(UUID id, CustomerRequest request);
+    CustomerResponse getCustomerById(UUID id);
     List<CustomerResponse> getAllCustomers();
-    void deactivateCustomer(Long id);
+    void deactivateCustomer(UUID id);
 }
