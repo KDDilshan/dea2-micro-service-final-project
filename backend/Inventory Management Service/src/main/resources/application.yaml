@@ -25,6 +25,24 @@ springdoc:
 
 server:
   port: ${SERVER_PORT:8081}
+  address: 0.0.0.0
+
+# ── Eureka Client Configuration ──────────────────────────────────────────────
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URL:http://131.163.97.60:8761/eureka/}
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    # Use the EC2 public IP so Eureka & Gateway can reach this service
+    prefer-ip-address: true
+    ip-address: ${INSTANCE_IP:35.88.199.189}
+    # Unique instance-id to avoid conflicts on restart
+    instance-id: ${spring.application.name}:${random.value}
+    # Faster failure detection
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 20
 
 management:
   endpoints:
