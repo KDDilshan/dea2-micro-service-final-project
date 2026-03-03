@@ -39,3 +39,26 @@ eureka:
     # Optional: Helps Gateway detect if the service goes down faster
     lease-renewal-interval-in-seconds: 10
     lease-expiration-duration-in-seconds: 20
+
+# ── Observability ──────────────────────────────────────────────
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+  tracing:
+    sampling:
+      probability: 1.0  # 100% sampling — lower in production
+  zipkin:
+    tracing:
+      endpoint: ${ZIPKIN_URL:http://localhost:9411}/api/v2/spans
+
+logging:
+  pattern:
+    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
