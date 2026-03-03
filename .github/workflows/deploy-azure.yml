@@ -17,7 +17,6 @@ jobs:
 
       - name: Build and Deploy with Docker Compose
         run: |
-          # 1. Create the .env file with database + observability credentials
           cd "backend/Workforce & Equipment Service"
           echo "DB_URL=${{ secrets.DB_URL }}" > .env
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
@@ -26,8 +25,9 @@ jobs:
           echo "LOKI_URL=http://loki:3100" >> .env
           chmod 600 .env
 
-          # 2. Stop any existing containers
+          sudo docker stop workforce-service || true
+          sudo docker rm workforce-service || true
+
           sudo docker compose down || true
 
-          # 3. Build and start the full stack (app + monitoring)
           sudo docker compose up -d --build
