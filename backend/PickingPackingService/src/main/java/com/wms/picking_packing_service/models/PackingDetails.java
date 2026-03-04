@@ -15,7 +15,6 @@ public class PackingDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long packingId;
-
     private String packingType;
     private Double weight;
     private String dimensions;

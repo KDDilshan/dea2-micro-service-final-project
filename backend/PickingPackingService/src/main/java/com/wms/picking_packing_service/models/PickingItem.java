@@ -14,12 +14,9 @@ public class PickingItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long itemId;
-
     private Integer quantityToPick;
     private Integer quantityPicked;
-
     private String binNo;
 
     @ManyToOne
