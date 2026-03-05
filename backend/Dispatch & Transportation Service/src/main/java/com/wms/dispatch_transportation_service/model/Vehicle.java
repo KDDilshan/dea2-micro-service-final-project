@@ -7,34 +7,25 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "shipments")
+@Table(name = "vehicles")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Dispatch {
+public class Vehicle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(columnDefinition = "CHAR(36)")
     private String id;
 
-    @Column(name = "order_id", nullable = false, columnDefinition = "CHAR(36)")
-    private String orderId;
+    @Column(name = "registration_number", unique = true, nullable = false)
+    private String registrationNumber;
 
-    @Column(name = "vehicle_id", columnDefinition = "CHAR(36)")
-    private String vehicleId;
-
-    @Column(name = "driver_id", columnDefinition = "CHAR(36)")
-    private String driverId;
+    @Column(name = "type")
+    private String type;
 
     @Column(name = "status")
-    private String status = "PENDING"; // PENDING, IN_TRANSIT, DELIVERED, DELAYED
-
-    @Column(name = "route_details", columnDefinition = "TEXT")
-    private String routeDetails;
-
-    @Column(name = "delivery_notes", columnDefinition = "TEXT")
-    private String deliveryNotes;
+    private String status = "AVAILABLE"; // AVAILABLE, IN_USE, MAINTENANCE
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
