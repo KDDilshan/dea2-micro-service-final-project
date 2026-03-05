@@ -13,9 +13,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import MoveToInboxIcon from "@mui/icons-material/MoveToInbox";
+import OutboxIcon from "@mui/icons-material/Outbox";
 import PeopleIcon from "@mui/icons-material/People";
-import PlaylistAddCheckIcon from "@mui/icons-material/PlaylistAddCheck";
-
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
@@ -73,11 +72,9 @@ const services = [
     gradient: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
   },
   {
-    label: "Picking",
-    eurekaName: "PICKING-PACKING-SERVICE",
-    href: "/picking_service",
-    icon: <PlaylistAddCheckIcon />,
-    gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+    label: "Pick & Pack",
+    icon: <OutboxIcon />,
+    gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
   },
   {
     label: "Product Catalog",
