@@ -22,7 +22,7 @@ spring:
 # --- Added Microservice External URLs ---
 app:
   supplier-service-url: http://your-supplier-ec2-ip:8081
-  product-service-url: http://your-product-ec2-ip:8082
+  product-service-url: http://51.20.184.86:8080
 
 # --- Eureka Client Configuration ---
 eureka:
