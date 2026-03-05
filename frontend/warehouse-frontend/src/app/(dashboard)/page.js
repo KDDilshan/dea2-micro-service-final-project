@@ -73,6 +73,8 @@ const services = [
   },
   {
     label: "Pick & Pack",
+    eurekaName: "PICK-PACK-SERVICE",
+    href: "/pick_pack_service",
     icon: <OutboxIcon />,
     gradient: "linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)",
   },
