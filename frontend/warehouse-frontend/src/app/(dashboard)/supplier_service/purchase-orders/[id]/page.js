@@ -152,9 +152,9 @@ export default function PurchaseOrderDetailsPage() {
     };
 
     const handleReceiveGoods = async () => {
-        const poNumber = po?.poNumber;
+        const poNumber = po?.poNumber || po?.id;
         if (!poNumber) {
-            showToast("error", "PO number not found");
+            showToast("error", "PO number/ID not found");
             return;
         }
         setReceiving(true);
