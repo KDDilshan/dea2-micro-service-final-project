@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/workers")
+@RequestMapping("/api/v1/workforce-equipment/workers")
 @RequiredArgsConstructor
 public class WorkerController {
 

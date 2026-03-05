@@ -1,6 +1,4 @@
 spring:
-  config:
-    import: optional:file:.env[.properties]
   application:
     name: inventory-management-service
   datasource:
@@ -10,11 +8,40 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: ${DB_DDL_AUTO:update}
-    show-sql: ${DB_SHOW_SQL:true}
+      ddl-auto: update
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
+        hbm2ddl.halt_on_error: true
+
+server:
+  port: ${SERVER_PORT:8081}
+  address: 0.0.0.0
+
+eureka:
+  client:
+    serviceUrl:
+      # This points to your Eureka Server on the other Azure VM
+      defaultZone: http://131.163.97.60:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    # Forces Eureka to use the Public IP instead of the internal 172.x.x.x address
+    prefer-ip-address: true
+    ip-address: 35.88.199.189
+
+    # Creates a unique ID so Eureka doesn't get confused if you restart the service
+    instance-id: ${spring.application.name}:${random.value}
+
+    # Optional: Helps Gateway detect if the service goes down faster
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 20
+
+# Internal token used when calling internal services (Product Catalog) through Eureka
+internal:
+  auth:
+    token: ${INTERNAL_AUTH_TOKEN:S3CR3T}
 
 springdoc:
   api-docs:
@@ -22,9 +49,6 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
     operationsSorter: method
-
-server:
-  port: ${SERVER_PORT:8081}
 
 management:
   endpoints:

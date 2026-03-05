@@ -24,7 +24,7 @@ spring:
     open-in-view: false
 
 inventory:
-  base-url: ${INVENTORY_SERVICE_URL:http://localhost:8080}
+  base-url: ${INVENTORY_SERVICE_URL:http://131.163.97.60:8222/inventory-management-service}
 
 springdoc:
   swagger-ui:
@@ -37,3 +37,11 @@ logging:
   config: classpath:logback-spring.xml
   file:
     path: logs
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://131.163.97.60:8761/eureka/}
+  instance:
+    prefer-ip-address: true
+    ip-address: 3.139.55.212
