@@ -19,7 +19,7 @@ public class PickingPacking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pickPackId;
 
-    private Long orderId;
+    private String orderId;
     private Long workerId;
     private LocalDateTime pickDate;
     private LocalDateTime packDate;
@@ -36,7 +36,7 @@ public class PickingPacking {
         return pickPackId;
     }
 
-    public Long getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
@@ -68,7 +68,7 @@ public class PickingPacking {
         this.pickPackId = pickPackId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
