@@ -334,7 +334,7 @@ export default function OrderServicePage() {
       <Paper
         elevation={0}
         sx={{
-          height: 560,
+          height: 620,
           width: "100%",
           borderRadius: 3,
           border: "1px solid",
@@ -342,10 +342,13 @@ export default function OrderServicePage() {
           overflow: "hidden",
           "& .MuiDataGrid-root":            { border: "none" },
           "& .MuiDataGrid-columnHeaders":   { bgcolor: "#f8fafc", color: "#64748b", fontWeight: 600 },
+          "& .MuiDataGrid-columnHeaderTitle": { fontWeight: 700, fontSize: "0.85rem", letterSpacing: "0.3px" },
+          "& .MuiDataGrid-columnHeader":    { px: 2.5, py: 1.5 },
           "& .MuiDataGrid-columnSeparator": { color: "#e2e8f0" },
-          "& .MuiDataGrid-cell":            { borderColor: "#f1f5f9" },
-          "& .MuiDataGrid-row:hover":       { bgcolor: "#f8fafc" },
-          "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #f1f5f9" },
+          "& .MuiDataGrid-cell":            { borderColor: "#f1f5f9", px: 2.5, py: 1.5, display: "flex", alignItems: "center" },
+          "& .MuiDataGrid-row":             { "&:hover": { bgcolor: "#f8fafc" } },
+          "& .MuiDataGrid-footerContainer": { borderTop: "1px solid #f1f5f9", px: 2, py: 0.5 },
+          "& .MuiDataGrid-overlay":         { bgcolor: "rgba(255,255,255,0.8)" },
         }}
       >
         <DataGrid
@@ -353,6 +356,8 @@ export default function OrderServicePage() {
           columns={columns}
           loading={loading}
           getRowId={(row) => row.id}
+          rowHeight={60}
+          columnHeaderHeight={52}
           pageSizeOptions={[10, 25, 50]}
           initialState={{
             pagination: { paginationModel: { pageSize: 10 } },
