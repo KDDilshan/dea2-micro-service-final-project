@@ -26,6 +26,11 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
     private final EquipmentRepository equipmentRepository;
     private final WorkerRepository workerRepository;
 
+    /**
+     * Retrieves all equipment assignments.
+     *
+     * @return a list of equipment assignment responses
+     */
     @Override
     public List<EquipmentAssignmentResponse> getAllAssignments() {
         return assignmentRepository.findAll()
@@ -34,6 +39,13 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves an equipment assignment by its ID.
+     *
+     * @param id the ID of the assignment to retrieve
+     * @return the equipment assignment response
+     * @throws ResourceNotFoundException if the assignment is not found
+     */
     @Override
     public EquipmentAssignmentResponse getAssignmentById(Long id) {
         EquipmentAssignment assignment = assignmentRepository.findById(id)
@@ -41,6 +53,12 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
         return mapToResponse(assignment);
     }
 
+    /**
+     * Retrieves all equipment assignments for a specific equipment.
+     *
+     * @param equipmentId the ID of the equipment
+     * @return a list of equipment assignment responses
+     */
     @Override
     public List<EquipmentAssignmentResponse> getAssignmentsByEquipmentId(Long equipmentId) {
         return assignmentRepository.findByEquipmentId(equipmentId)
@@ -49,6 +67,12 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all equipment assignments for a specific worker.
+     *
+     * @param workerId the ID of the worker
+     * @return a list of equipment assignment responses
+     */
     @Override
     public List<EquipmentAssignmentResponse> getAssignmentsByWorkerId(Long workerId) {
         return assignmentRepository.findByWorkerId(workerId)
@@ -57,6 +81,13 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Creates a new equipment assignment.
+     *
+     * @param request the equipment assignment request containing the details
+     * @return the created equipment assignment response
+     * @throws ResourceNotFoundException if the equipment or worker is not found
+     */
     @Override
     public EquipmentAssignmentResponse createAssignment(EquipmentAssignmentRequest request) {
         Equipment equipment = equipmentRepository.findById(request.getEquipmentId())
@@ -76,6 +107,14 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Updates an existing equipment assignment.
+     *
+     * @param id the ID of the assignment to update
+     * @param request the equipment assignment request containing the updated details
+     * @return the updated equipment assignment response
+     * @throws ResourceNotFoundException if the assignment, equipment, or worker is not found
+     */
     @Override
     public EquipmentAssignmentResponse updateAssignment(Long id, EquipmentAssignmentRequest request) {
         EquipmentAssignment assignment = assignmentRepository.findById(id)
@@ -97,6 +136,12 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
         return mapToResponse(updated);
     }
 
+    /**
+     * Deletes an equipment assignment by its ID.
+     *
+     * @param id the ID of the assignment to delete
+     * @throws ResourceNotFoundException if the assignment is not found
+     */
     @Override
     public void deleteAssignment(Long id) {
         EquipmentAssignment assignment = assignmentRepository.findById(id)
@@ -104,6 +149,12 @@ public class EquipmentAssignmentService implements IEquipmentAssignmentService {
         assignmentRepository.delete(assignment);
     }
 
+    /**
+     * Maps an EquipmentAssignment entity to an EquipmentAssignmentResponse DTO.
+     *
+     * @param assignment the equipment assignment entity
+     * @return the mapped equipment assignment response
+     */
     private EquipmentAssignmentResponse mapToResponse(EquipmentAssignment assignment) {
         return new EquipmentAssignmentResponse(
                 assignment.getId(),

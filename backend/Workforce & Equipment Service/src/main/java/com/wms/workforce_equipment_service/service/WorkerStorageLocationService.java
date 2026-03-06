@@ -29,6 +29,15 @@ public class WorkerStorageLocationService implements IWorkerStorageLocationServi
     private final WorkerRepository workerRepository;
     private final StorageLocationServiceClient storageLocationServiceClient;
 
+    /**
+     * Assigns a worker to a storage location.
+     *
+     * @param request the assignment request containing worker ID and storage location ID
+     * @return the worker storage location response
+     * @throws ResourceNotFoundException if the worker or storage location is not found
+     * @throws ConflictException if the worker is already assigned to the storage location
+     * @throws RuntimeException if there is an error communicating with the Storage Location Service
+     */
     @Override
     @Transactional
     public WorkerStorageLocationResponse assignWorkerToStorageLocation(WorkerStorageLocationRequest request) {
@@ -69,6 +78,13 @@ public class WorkerStorageLocationService implements IWorkerStorageLocationServi
         return mapToResponse(savedAssignment);
     }
 
+    /**
+     * Retrieves all storage location assignments for a specific worker.
+     *
+     * @param workerId the ID of the worker
+     * @return a list of worker storage location responses
+     * @throws ResourceNotFoundException if the worker is not found
+     */
     @Override
     public List<WorkerStorageLocationResponse> getStorageLocationsByWorkerId(Long workerId) {
         // Validate worker exists first
@@ -80,6 +96,12 @@ public class WorkerStorageLocationService implements IWorkerStorageLocationServi
         return assignments.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    /**
+     * Removes a worker storage location assignment by its ID.
+     *
+     * @param id the ID of the assignment to remove
+     * @throws ResourceNotFoundException if the assignment is not found
+     */
     @Override
     @Transactional
     public void removeAssignment(Long id) {
@@ -89,6 +111,12 @@ public class WorkerStorageLocationService implements IWorkerStorageLocationServi
         workerStorageLocationRepository.deleteById(id);
     }
 
+    /**
+     * Maps a WorkerStorageLocation entity to a WorkerStorageLocationResponse DTO.
+     *
+     * @param entity the worker storage location entity
+     * @return the mapped worker storage location response
+     */
     private WorkerStorageLocationResponse mapToResponse(WorkerStorageLocation entity) {
         return new WorkerStorageLocationResponse(
                 entity.getId(),

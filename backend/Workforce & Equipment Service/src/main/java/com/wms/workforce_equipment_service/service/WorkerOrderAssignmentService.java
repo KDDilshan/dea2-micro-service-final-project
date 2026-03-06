@@ -29,6 +29,14 @@ public class WorkerOrderAssignmentService implements IWorkerOrderAssignmentServi
     private final WorkerRepository workerRepository;
     private final OrderServiceClient orderServiceClient;
 
+    /**
+     * Assigns workers and a supervisor to an order.
+     *
+     * @param request the assignment request containing order ID, supervisor ID, and worker IDs
+     * @return a list of worker order assignment responses
+     * @throws ResourceNotFoundException if the supervisor, any worker, or the order is not found
+     * @throws RuntimeException if there is an error communicating with the Order Service
+     */
     @Override
     @Transactional
     public List<WorkerOrderAssignmentResponse> assignWorkersToOrder(AssignWorkersToOrderRequest request) {
@@ -85,12 +93,25 @@ public class WorkerOrderAssignmentService implements IWorkerOrderAssignmentServi
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all worker assignments for a specific order.
+     *
+     * @param orderId the ID of the order
+     * @return a list of worker order assignment responses
+     */
     @Override
     public List<WorkerOrderAssignmentResponse> getAssignmentsByOrderId(String orderId) {
         List<WorkerOrderAssignment> assignments = workerOrderAssignmentRepository.findByOrderId(orderId);
         return assignments.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves all order assignments for a specific worker.
+     *
+     * @param workerId the ID of the worker
+     * @return a list of worker order assignment responses
+     * @throws ResourceNotFoundException if the worker is not found
+     */
     @Override
     public List<WorkerOrderAssignmentResponse> getAssignmentsByWorkerId(Long workerId) {
         if (!workerRepository.existsById(workerId)) {
@@ -101,6 +122,12 @@ public class WorkerOrderAssignmentService implements IWorkerOrderAssignmentServi
         return assignments.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    /**
+     * Maps a WorkerOrderAssignment entity to a WorkerOrderAssignmentResponse DTO.
+     *
+     * @param entity the worker order assignment entity
+     * @return the mapped worker order assignment response
+     */
     private WorkerOrderAssignmentResponse mapToResponse(WorkerOrderAssignment entity) {
         return new WorkerOrderAssignmentResponse(
                 entity.getId(),
