@@ -17,7 +17,7 @@ public interface PickingPackingService {
 
     void delete(Long id);
     
-    List<PickingPackingDTO> getByOrderId(Long orderId);
+    List<PickingPackingDTO> getByOrderId(String orderId);
     
     List<PickingPackingDTO> getByWorkerId(Long workerId);
     

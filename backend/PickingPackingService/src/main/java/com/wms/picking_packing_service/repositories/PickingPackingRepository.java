@@ -11,11 +11,11 @@ import java.util.Optional;
 public interface PickingPackingRepository
         extends JpaRepository<PickingPacking, Long> {
     
-    List<PickingPacking> findByOrderId(Long orderId);
+    List<PickingPacking> findByOrderId(String orderId);
     
     List<PickingPacking> findByWorkerId(Long workerId);
     
     List<PickingPacking> findByStatus(String status);
     
-    Optional<PickingPacking> findByOrderIdAndStatus(Long orderId, String status);
+    Optional<PickingPacking> findByOrderIdAndStatus(String orderId, String status);
 }
