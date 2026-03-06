@@ -29,7 +29,7 @@ public class PickingPackingCrudService {
     private static final String STATUS_PACKING = "PACKING";
     private static final String STATUS_COMPLETED = "COMPLETED";
     private static final String STATUS_CANCELLED = "CANCELLED";
-    private static final String ORDER_STATUS_PICKING_APPROVED = "PICKING_APPROVED";
+    private static final String ORDER_STATUS_PICKING_REQUESTED = "PICKING_REQUESTED";
     private static final Set<String> VALID_STATUSES = Set.of(
             STATUS_PENDING,
             STATUS_PICKING,
@@ -74,7 +74,7 @@ public class PickingPackingCrudService {
             throw new BadRequestException("Order not found with ID: " + dto.getOrderId());
         }
 
-        if (!ORDER_STATUS_PICKING_APPROVED.equals(upstreamOrderStatus)) {
+        if (!ORDER_STATUS_PICKING_REQUESTED.equals(upstreamOrderStatus)) {
             throw new BadRequestException(
                     "Order " + dto.getOrderId() + " is not ready for picking. Current status: " + upstreamOrderStatus);
         }
