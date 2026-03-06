@@ -49,7 +49,7 @@ public class PickingPackingServiceImpl implements PickingPackingService {
     }
 
     @Override
-    public List<PickingPackingDTO> getByOrderId(Long orderId) {
+    public List<PickingPackingDTO> getByOrderId(String orderId) {
         return crudService.getByOrderId(orderId);
     }
 

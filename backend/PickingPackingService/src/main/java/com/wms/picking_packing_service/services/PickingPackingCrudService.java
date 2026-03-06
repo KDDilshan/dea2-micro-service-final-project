@@ -172,7 +172,7 @@ public class PickingPackingCrudService {
         return mapper.toDTO(updated);
     }
 
-    public List<PickingPackingDTO> getByOrderId(Long orderId) {
+    public List<PickingPackingDTO> getByOrderId(String orderId) {
         return repository.findByOrderId(orderId).stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());

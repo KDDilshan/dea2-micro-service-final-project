@@ -28,7 +28,7 @@ public class OrderIntegrationController {
     @GetMapping("/{orderId}")
     @Operation(summary = "Get picking tasks by order", 
                description = "🔵 CALLED BY: Order Service → Returns all picking tasks for specific order")
-    public ResponseEntity<List<PickingPackingDTO>> getByOrderId(@PathVariable Long orderId) {
+    public ResponseEntity<List<PickingPackingDTO>> getByOrderId(@PathVariable String orderId) {
         return ResponseEntity.ok(service.getByOrderId(orderId));
     }
 }
