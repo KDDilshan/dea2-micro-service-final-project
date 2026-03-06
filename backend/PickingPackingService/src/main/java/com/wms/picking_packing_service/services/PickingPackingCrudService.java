@@ -127,6 +127,7 @@ public class PickingPackingCrudService {
         }
 
         mapper.replaceItems(entity, dto.getItems());
+        mapper.replacePackingDetails(entity, dto.getPackingDetails());
 
         PickingPacking updated = repository.save(entity);
         return mapper.toDTO(updated);
