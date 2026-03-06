@@ -3,6 +3,7 @@ package com.wms.picking_packing_service.services;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -172,7 +173,7 @@ public class PickingPackingCrudService {
         return mapper.toDTO(updated);
     }
 
-    public List<PickingPackingDTO> getByOrderId(String orderId) {
+    public List<PickingPackingDTO> getByOrderId(UUID orderId) {
         return repository.findByOrderId(orderId).stream()
                 .map(mapper::toDTO)
                 .collect(Collectors.toList());

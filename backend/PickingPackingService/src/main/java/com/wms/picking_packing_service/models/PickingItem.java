@@ -1,5 +1,7 @@
 package com.wms.picking_packing_service.models;
 
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,12 +16,9 @@ public class PickingItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Long itemId;
-
+    private UUID itemId;
     private Integer quantityToPick;
     private Integer quantityPicked;
-
     private String binNo;
 
     @ManyToOne
@@ -30,7 +29,7 @@ public class PickingItem {
         return id;
     }
 
-    public Long getItemId() {
+    public UUID getItemId() {
         return itemId;
     }
 
@@ -54,7 +53,7 @@ public class PickingItem {
         this.id = id;
     }
 
-    public void setItemId(Long itemId) {
+    public void setItemId(UUID itemId) {
         this.itemId = itemId;
     }
 
