@@ -15,7 +15,7 @@ public interface WorkerClient {
     default boolean isWorkerAvailable(Long workerId) {
         try {
             Map<String, Object> worker = getWorkerById(workerId);
-            return worker != null && "AVAILABLE".equals(worker.get("status"));
+            return worker != null;
         } catch (Exception exception) {
             return false;
         }

@@ -73,7 +73,7 @@ public class PickingPackingCrudService {
         }
 
         if (!workerClient.isWorkerAvailable(dto.getWorkerId())) {
-            throw new BadRequestException("Worker is not available with ID: " + dto.getWorkerId());
+            throw new BadRequestException("Worker not found with ID: " + dto.getWorkerId());
         }
 
         PickingPacking entity = new PickingPacking();
