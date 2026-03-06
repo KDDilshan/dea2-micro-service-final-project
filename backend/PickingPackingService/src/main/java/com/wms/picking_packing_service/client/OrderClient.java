@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface OrderClient {
 
     @GetMapping("/api/v1/orders/{orderId}")
-    Map<String, Object> getOrderById(@PathVariable("orderId") Long orderId);
+    Map<String, Object> getOrderById(@PathVariable("orderId") String orderId);
 
     @PatchMapping("/api/v1/orders/{orderId}/status")
-    void updateOrderStatus(@PathVariable("orderId") Long orderId, @RequestParam("status") String status);
+    void updateOrderStatus(@PathVariable("orderId") String orderId, @RequestParam("status") String status);
 }

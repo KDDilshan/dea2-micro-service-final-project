@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 
 public class PickingPackingDTO {
     private Long pickPackId;
-    private Long orderId;
+    private String orderId;
     private Long workerId;
 
     private LocalDateTime pickDate;
@@ -27,7 +27,7 @@ public class PickingPackingDTO {
         this.pickPackId = pickPackId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setOrderId(String orderId) {
         this.orderId = orderId;
     }
 
@@ -59,7 +59,7 @@ public class PickingPackingDTO {
         return pickPackId;
     }
 
-    public Long getOrderId() {
+    public String getOrderId() {
         return orderId;
     }
 
