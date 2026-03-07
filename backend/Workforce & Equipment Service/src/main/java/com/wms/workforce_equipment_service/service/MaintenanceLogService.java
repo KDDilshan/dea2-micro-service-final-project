@@ -23,6 +23,11 @@ public class MaintenanceLogService implements IMaintenanceLogService {
     private final MaintenanceLogRepository maintenanceLogRepository;
     private final EquipmentRepository equipmentRepository;
 
+    /**
+     * Retrieves all maintenance logs.
+     *
+     * @return a list of maintenance log responses
+     */
     @Override
     public List<MaintenanceLogResponse> getAllMaintenanceLogs() {
         return maintenanceLogRepository.findAll()
@@ -31,6 +36,13 @@ public class MaintenanceLogService implements IMaintenanceLogService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a maintenance log by its ID.
+     *
+     * @param id the ID of the maintenance log to retrieve
+     * @return the maintenance log response
+     * @throws ResourceNotFoundException if the maintenance log is not found
+     */
     @Override
     public MaintenanceLogResponse getMaintenanceLogById(Long id) {
         MaintenanceLog log = maintenanceLogRepository.findById(id)
@@ -38,6 +50,12 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         return mapToResponse(log);
     }
 
+    /**
+     * Retrieves all maintenance logs for a specific equipment.
+     *
+     * @param equipmentId the ID of the equipment
+     * @return a list of maintenance log responses
+     */
     @Override
     public List<MaintenanceLogResponse> getMaintenanceLogsByEquipmentId(Long equipmentId) {
         return maintenanceLogRepository.findByEquipmentId(equipmentId)
@@ -46,6 +64,13 @@ public class MaintenanceLogService implements IMaintenanceLogService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Creates a new maintenance log.
+     *
+     * @param request the maintenance log request containing the details
+     * @return the created maintenance log response
+     * @throws ResourceNotFoundException if the equipment is not found
+     */
     @Override
     public MaintenanceLogResponse createMaintenanceLog(MaintenanceLogRequest request) {
         Equipment equipment = equipmentRepository.findById(request.getEquipmentId())
@@ -63,6 +88,14 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Updates an existing maintenance log.
+     *
+     * @param id the ID of the maintenance log to update
+     * @param request the maintenance log request containing the updated details
+     * @return the updated maintenance log response
+     * @throws ResourceNotFoundException if the maintenance log or equipment is not found
+     */
     @Override
     public MaintenanceLogResponse updateMaintenanceLog(Long id, MaintenanceLogRequest request) {
         MaintenanceLog log = maintenanceLogRepository.findById(id)
@@ -82,6 +115,12 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         return mapToResponse(updated);
     }
 
+    /**
+     * Deletes a maintenance log by its ID.
+     *
+     * @param id the ID of the maintenance log to delete
+     * @throws ResourceNotFoundException if the maintenance log is not found
+     */
     @Override
     public void deleteMaintenanceLog(Long id) {
         MaintenanceLog log = maintenanceLogRepository.findById(id)
@@ -89,6 +128,12 @@ public class MaintenanceLogService implements IMaintenanceLogService {
         maintenanceLogRepository.delete(log);
     }
 
+    /**
+     * Maps a MaintenanceLog entity to a MaintenanceLogResponse DTO.
+     *
+     * @param log the maintenance log entity
+     * @return the mapped maintenance log response
+     */
     private MaintenanceLogResponse mapToResponse(MaintenanceLog log) {
         return new MaintenanceLogResponse(
                 log.getId(),

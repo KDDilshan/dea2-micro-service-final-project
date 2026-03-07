@@ -23,6 +23,11 @@ public class EquipmentService implements IEquipmentService {
     private final EquipmentRepository equipmentRepository;
     private final EquipmentTypeRepository equipmentTypeRepository;
 
+    /**
+     * Retrieves all equipment.
+     *
+     * @return a list of equipment responses
+     */
     @Override
     public List<EquipmentResponse> getAllEquipments() {
         return equipmentRepository.findAll()
@@ -31,6 +36,13 @@ public class EquipmentService implements IEquipmentService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves an equipment by its ID.
+     *
+     * @param id the ID of the equipment to retrieve
+     * @return the equipment response
+     * @throws ResourceNotFoundException if the equipment is not found
+     */
     @Override
     public EquipmentResponse getEquipmentById(Long id) {
         Equipment equipment = equipmentRepository.findById(id)
@@ -38,6 +50,13 @@ public class EquipmentService implements IEquipmentService {
         return mapToResponse(equipment);
     }
 
+    /**
+     * Creates a new equipment.
+     *
+     * @param request the equipment request containing the details
+     * @return the created equipment response
+     * @throws ResourceNotFoundException if the associated equipment type is not found
+     */
     @Override
     public EquipmentResponse createEquipment(EquipmentRequest request) {
         EquipmentType equipmentType = equipmentTypeRepository.findById(request.getEquipmentTypeId())
@@ -53,6 +72,14 @@ public class EquipmentService implements IEquipmentService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Updates an existing equipment.
+     *
+     * @param id the ID of the equipment to update
+     * @param request the equipment request containing the updated details
+     * @return the updated equipment response
+     * @throws ResourceNotFoundException if the equipment or associated equipment type is not found
+     */
     @Override
     public EquipmentResponse updateEquipment(Long id, EquipmentRequest request) {
         Equipment equipment = equipmentRepository.findById(id)
@@ -70,6 +97,12 @@ public class EquipmentService implements IEquipmentService {
         return mapToResponse(updated);
     }
 
+    /**
+     * Deletes an equipment by its ID.
+     *
+     * @param id the ID of the equipment to delete
+     * @throws ResourceNotFoundException if the equipment is not found
+     */
     @Override
     public void deleteEquipment(Long id) {
         Equipment equipment = equipmentRepository.findById(id)
@@ -77,6 +110,12 @@ public class EquipmentService implements IEquipmentService {
         equipmentRepository.delete(equipment);
     }
 
+    /**
+     * Maps an Equipment entity to an EquipmentResponse DTO.
+     *
+     * @param equipment the equipment entity
+     * @return the mapped equipment response
+     */
     private EquipmentResponse mapToResponse(Equipment equipment) {
         return new EquipmentResponse(
                 equipment.getId(),

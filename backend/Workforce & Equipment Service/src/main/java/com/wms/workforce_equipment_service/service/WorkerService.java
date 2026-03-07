@@ -20,6 +20,11 @@ public class WorkerService implements IWorkerService {
 
     private final WorkerRepository workerRepository;
 
+    /**
+     * Retrieves all workers.
+     *
+     * @return a list of worker responses
+     */
     @Override
     public List<WorkerResponse> getAllWorkers() {
         return workerRepository.findAll()
@@ -28,6 +33,13 @@ public class WorkerService implements IWorkerService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a worker by its ID.
+     *
+     * @param id the ID of the worker to retrieve
+     * @return the worker response
+     * @throws ResourceNotFoundException if the worker is not found
+     */
     @Override
     public WorkerResponse getWorkerById(Long id) {
         Worker worker = workerRepository.findById(id)
@@ -35,6 +47,12 @@ public class WorkerService implements IWorkerService {
         return mapToResponse(worker);
     }
 
+    /**
+     * Creates a new worker.
+     *
+     * @param request the worker request containing the details
+     * @return the created worker response
+     */
     @Override
     public WorkerResponse createWorker(WorkerRequest request) {
         Worker worker = new Worker();
@@ -46,6 +64,14 @@ public class WorkerService implements IWorkerService {
         return mapToResponse(saved);
     }
 
+    /**
+     * Updates an existing worker.
+     *
+     * @param id the ID of the worker to update
+     * @param request the worker request containing the updated details
+     * @return the updated worker response
+     * @throws ResourceNotFoundException if the worker is not found
+     */
     @Override
     public WorkerResponse updateWorker(Long id, WorkerRequest request) {
         Worker worker = workerRepository.findById(id)
@@ -59,6 +85,12 @@ public class WorkerService implements IWorkerService {
         return mapToResponse(updated);
     }
 
+    /**
+     * Deletes a worker by its ID.
+     *
+     * @param id the ID of the worker to delete
+     * @throws ResourceNotFoundException if the worker is not found
+     */
     @Override
     public void deleteWorker(Long id) {
         Worker worker = workerRepository.findById(id)
@@ -66,6 +98,12 @@ public class WorkerService implements IWorkerService {
         workerRepository.delete(worker);
     }
 
+    /**
+     * Maps a Worker entity to a WorkerResponse DTO.
+     *
+     * @param worker the worker entity
+     * @return the mapped worker response
+     */
     private WorkerResponse mapToResponse(Worker worker) {
         return new WorkerResponse(
                 worker.getId(),
